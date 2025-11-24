@@ -1,4 +1,4 @@
-package com.360cam;
+package com.cam360;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
