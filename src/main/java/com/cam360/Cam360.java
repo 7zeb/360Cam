@@ -43,7 +43,7 @@ public class Cam360 implements ModInitializer {
             client.player.setYaw(newYaw);
 
             String filename = "360_" + System.currentTimeMillis() + "_" + i + ".png";
-            ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer());
+            ScreenshotRecorder.saveScreenshot(folder, filename);
         }
 
         client.player.setYaw(originalYaw);
