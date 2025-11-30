@@ -2,11 +2,12 @@ plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
 }
 
-group = 'com.360cam'
+group = 'com.cam360'   // avoid starting with a digit
 version = '1.0.0'
 
 repositories {
     mavenCentral()
+    maven { url = "https://maven.fabricmc.net/" }
 }
 
 dependencies {
