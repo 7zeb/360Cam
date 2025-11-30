@@ -37,37 +37,48 @@ public class Cam360 implements ClientModInitializer {
         System.out.println("[Cam360] Client-side mod initialized!");
     }
 
-    private void capture360(MinecraftClient client) {
-        if (client.player == null) return;
+    private boolean capturing = false;
+private Iterator<Float> yawIterator;
+private float originalYaw;
+private File folder;
 
-        float originalYaw = client.player.getYaw();
-        File folder = new File(client.runDirectory, "screenshots360");
-        if (!folder.exists()) folder.mkdirs();
+private void capture360(MinecraftClient client) {
+    if (client.player == null) return;
 
-        List<Float> yawSteps = new ArrayList<>();
-        for (int i = 0; i < 8; i++) {
-            yawSteps.add(originalYaw + (i * 45));
+    originalYaw = client.player.getYaw();
+    folder = new File(client.runDirectory, "screenshots360");
+    if (!folder.exists()) folder.mkdirs();
+
+    List<Float> yawSteps = new ArrayList<>();
+    for (int i = 0; i < 8; i++) {
+        yawSteps.add(originalYaw + (i * 45));
+    }
+    yawIterator = yawSteps.iterator();
+    capturing = true;
+}
+
+@Override
+public void onInitializeClient() {
+    // keybind setup...
+    ClientTickEvents.END_CLIENT_TICK.register(client -> {
+        while (captureKey.wasPressed()) {
+            capture360(client);
         }
 
-        Iterator<Float> yawIterator = yawSteps.iterator();
+        if (capturing && yawIterator != null && client.player != null) {
+            if (yawIterator.hasNext()) {
+                float newYaw = yawIterator.next();
+                client.player.setYaw(newYaw);
 
-        ClientTickEvents.END_CLIENT_TICK.register(new ClientTickEvents.EndTick() {
-            @Override
-            public void onEndTick(MinecraftClient client) {
-                if (client.player == null) return;
-
-                if (yawIterator.hasNext()) {
-                    float newYaw = yawIterator.next();
-                    client.player.setYaw(newYaw);
-
-                    String filename = "360_" + System.currentTimeMillis() + "_" + ((int)newYaw % 360) + ".png";
-                    ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer(), text -> {});
-                } else {
-                    client.player.setYaw(originalYaw);
-                    ClientTickEvents.END_CLIENT_TICK.unregister(this);
-                    client.player.sendMessage(Text.literal("Captured 360° screenshots!"), false);
-                }
+                String filename = "360_" + System.currentTimeMillis() + "_" + ((int)newYaw % 360) + ".png";
+                ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer(), text -> {});
+            } else {
+                client.player.setYaw(originalYaw);
+                capturing = false;
+                client.player.sendMessage(Text.literal("Captured 360° screenshots!"), false);
             }
-        });
-    }
+        }
+    });
+}
+
 }
