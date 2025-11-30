@@ -34,19 +34,39 @@ public class Cam360 implements ClientModInitializer {
     }
 
     private void capture360(MinecraftClient client) {
-        if (client.player == null) return;
+    if (client.player == null) return;
 
-        float originalYaw = client.player.getYaw();
-        File folder = new File(client.runDirectory, "screenshots360");
-        if (!folder.exists()) folder.mkdirs();
+    float originalYaw = client.player.getYaw();
+    File folder = new File(client.runDirectory, "screenshots360");
+    if (!folder.exists()) folder.mkdirs();
 
-        for (int i = 0; i < 8; i++) { // 8 shots = 45° increments
-            float newYaw = originalYaw + (i * 45);
-            client.player.setYaw(newYaw);
+    List<Float> yawSteps = new ArrayList<>();
+    for (int i = 0; i < 8; i++) {
+        yawSteps.add(originalYaw + (i * 45));
+    }
 
-            String filename = "360_" + System.currentTimeMillis() + "_" + i + ".png";
-            ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer(), text -> {});
+    Iterator<Float> yawIterator = yawSteps.iterator();
+
+    ClientTickEvents.END_CLIENT_TICK.register(new ClientTickEvents.EndTick() {
+        @Override
+        public void onEndTick(MinecraftClient client) {
+            if (client.player == null) return;
+
+            if (yawIterator.hasNext()) {
+                float newYaw = yawIterator.next();
+                client.player.setYaw(newYaw);
+
+                String filename = "360_" + System.currentTimeMillis() + "_" + ((int)newYaw % 360) + ".png";
+                ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer(), text -> {});
+            } else {
+                client.player.setYaw(originalYaw);
+                ClientTickEvents.END_CLIENT_TICK.unregister(this);
+                client.player.sendMessage(Text.literal("Captured 360° screenshots!"), false);
+            }
         }
+    });
+}
+
 
         client.player.setYaw(originalYaw);
     }
