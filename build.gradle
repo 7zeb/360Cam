@@ -2,7 +2,7 @@ plugins {
     id 'fabric-loom' version '1.7-SNAPSHOT'
 }
 
-group = 'com.cam360'   // avoid starting with a digit
+group = 'com.cam360'
 version = '1.0.0'
 
 repositories {
