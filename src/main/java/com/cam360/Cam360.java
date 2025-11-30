@@ -38,13 +38,16 @@ public class Cam360 implements ModInitializer {
         File folder = new File(client.runDirectory, "screenshots360");
         if (!folder.exists()) folder.mkdirs();
 
-        for (int i = 0; i < 8; i++) { // 8 shots = 45° increments
+    for (int i = 0; i < 8; i++) { // 8 shots = 45° increments
     float newYaw = originalYaw + (i * 45);
     client.player.setYaw(newYaw);
 
     String filename = "360_" + System.currentTimeMillis() + "_" + i + ".png";
-    ScreenshotRecorder.saveScreenshot(folder, filename); // <-- FIXED
+    ScreenshotRecorder.saveScreenshot(folder, filename, client.getFramebuffer(), text -> {});
 }
+
+client.player.setYaw(originalYaw);
+
 
 
         client.player.setYaw(originalYaw);
