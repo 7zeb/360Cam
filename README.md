@@ -11,3 +11,8 @@ To install Cam360 you need
 - Fabric 0.15.11 or later
 
 **This is a client side mod**
+## How to install
+(this is still being written, it will probably get updated soon)
+If you do not have Fabric installed, download it from the [Official Website|https://fabricmc.net/]
+
+**The Fabric API is also recomended, download it [Here|https://github.com/FabricMC/fabric/releases]**
